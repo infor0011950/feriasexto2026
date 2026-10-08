@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Trivia de Robótica · Feria Eucamer 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6fb;--card:#fff;--ink:#14213d;--mut:#5b6b88;--line:#d3dcec;--y:#ffb703;--b:#2a6df4;--ok:#1fa85a;--okbg:#d9f6e5;--bad:#e03a3a;--badbg:#fde0e0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1730;--card:#17244a;--ink:#f4f7ff;--mut:#9fb0d6;--line:#2c3c6e;--okbg:#12432b;--badbg:#4a1c24}}
+:root[data-theme="dark"]{--bg:#0e1730;--card:#17244a;--ink:#f4f7ff;--mut:#9fb0d6;--line:#2c3c6e;--okbg:#12432b;--badbg:#4a1c24}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:Fredoka,"Trebuchet MS",system-ui,sans-serif;display:flex;justify-content:center;padding:16px;
+background-image:radial-gradient(var(--line) 1.5px,transparent 1.5px);background-size:26px 26px}
+#app{width:100%;max-width:640px;margin:auto}
+.card{background:var(--card);border:3px solid var(--ink);border-radius:22px;box-shadow:0 7px 0 var(--ink);padding:24px;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes pop{from{transform:scale(.88) translateY(14px);opacity:0}to{transform:none;opacity:1}}
+h1{font-size:clamp(30px,8vw,46px);line-height:1.05;margin:8px 0 10px}
+p{line-height:1.5;color:var(--mut);margin:0 0 16px}
+.gears{display:flex;gap:6px;align-items:center;font-size:44px}
+.gears span:nth-child(1){animation:spin 4s linear infinite}.gears span:nth-child(2){animation:spin 4s linear infinite reverse}
+@keyframes spin{to{transform:rotate(360deg)}}
+.btn{font:inherit;font-weight:600;font-size:19px;background:var(--y);color:#14213d;border:3px solid #14213d;border-radius:14px;padding:12px 24px;cursor:pointer;box-shadow:0 5px 0 #14213d;transition:transform .1s,box-shadow .1s}
+.btn:hover{transform:translateY(-2px)}.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #14213d}
+.btn:focus-visible,.opt:focus-visible,.snd:focus-visible{outline:4px solid var(--b);outline-offset:3px}
+.top{display:flex;justify-content:space-between;align-items:center;font-weight:600;margin-bottom:10px;gap:8px}
+.pill{border:2px solid var(--ink);border-radius:99px;padding:3px 12px;background:var(--card)}
+.pill.bump{animation:bump .4s}@keyframes bump{50%{transform:scale(1.35);background:var(--y);color:#14213d}}
+.bar{height:14px;border:2px solid var(--ink);border-radius:99px;overflow:hidden;margin-bottom:18px;background:var(--card)}
+.bar i{display:block;height:100%;width:0;background:repeating-linear-gradient(45deg,var(--b),var(--b) 10px,#4d8bff 10px,#4d8bff 20px);transition:width .5s}
+.q{font-size:clamp(20px,5vw,25px);font-weight:600;line-height:1.25;margin:0 0 18px}
+.opts{display:grid;gap:11px}
+.opt{font:inherit;font-size:18px;text-align:left;color:var(--ink);background:var(--card);border:3px solid var(--line);border-radius:14px;padding:13px 16px;cursor:pointer;display:flex;gap:12px;align-items:center;transition:transform .12s,border-color .12s;animation:pop .4s backwards}
+.opt:nth-child(2){animation-delay:.06s}.opt:nth-child(3){animation-delay:.12s}.opt:nth-child(4){animation-delay:.18s}
+.opt:hover:not(:disabled){border-color:var(--b);transform:translateX(5px)}
+.opt b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--card);display:grid;place-items:center;font-size:15px}
+.opt:disabled{cursor:default}
+.opt.ok{background:var(--okbg);border-color:var(--ok);animation:yes .6s}
+.opt.bad{background:var(--badbg);border-color:var(--bad);animation:no .5s}
+.opt.dim{opacity:.5}
+@keyframes yes{30%{transform:scale(1.05)}60%{transform:scale(.98)}}
+@keyframes no{20%,60%{transform:translateX(-9px)}40%,80%{transform:translateX(9px)}}
+.fb{margin-top:16px;border-radius:14px;padding:12px 16px;font-weight:600;font-size:18px;display:none;align-items:center;gap:10px;animation:pop .35s}
+.fb.show{display:flex}.fb.ok{background:var(--okbg);color:var(--ok);border:3px solid var(--ok)}.fb.bad{background:var(--badbg);color:var(--bad);border:3px solid var(--bad)}
+.fb span{color:var(--ink);font-weight:500}
+.next{margin-top:16px;text-align:right;min-height:58px}
+.big{font-size:84px;font-weight:700;line-height:1;margin:6px 0}
+.stats{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:18px}
+.snd{position:fixed;top:calc(10px + env(safe-area-inset-top,0px));right:12px;font-size:22px;background:var(--card);border:2px solid var(--ink);border-radius:50%;width:44px;height:44px;cursor:pointer}
+canvas{position:fixed;inset:0;pointer-events:none;z-index:9}
+.flash{animation:fl .5s}@keyframes fl{0%{box-shadow:0 0 0 0 var(--fc),0 7px 0 var(--ink)}100%{box-shadow:0 0 0 24px transparent,0 7px 0 var(--ink)}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition:none!important}}
+</style>
+</head>
+<body>
+<button class="snd" id="snd" aria-label="Activar o silenciar sonido">🔊</button>
+<canvas id="cv"></canvas>
+<main id="app"></main>
+<script>
+// Cada pregunta: [enunciado, [correcta, ...incorrectas], dato]
+const Q=[
+["¿A qué área pertenece el proyecto presentado en la feria?",["Robótica educativa","Astronomía","Química","Cocina científica"]],
+["¿En qué feria se presenta el proyecto?",["Feria Eucamer 2026","Feria del Libro","Feria de Ciencias 2020","Feria Tecnológica Mundial"]],
+["¿Qué obtenemos al combinar varias máquinas simples?",["Máquinas compuestas","Máquinas imposibles","Circuitos en serie","Baterías nuevas"]],
+["¿Qué principio permite el desplazamiento de los vehículos terrestres?",["Rueda y eje","Palanca","Plano inclinado","Tornillo"]],
+["¿Qué elemento se usa para facilitar la elevación de cargas?",["La polea","El diodo","La resistencia","El switch"]],
+["En el carro de Fórmula 1, ¿a qué está conectado el sistema de engranajes?",["Al eje trasero","A la hélice","Al brazo mecánico","A la caja de carga"]],
+["En el carro de Fórmula 1, ¿qué transformación de energía ocurre?",["Eléctrica a movimiento mecánico","Solar a térmica","Química a sonora","Eólica a eléctrica"]],
+["¿Qué probaron para lograr la estabilidad de la motocicleta?",["Diferentes grosores de neumáticos","Diferentes colores","Más luces LED","Un motor más pequeño"]],
+["En el camión grúa, ¿qué sistema multiplica la fuerza para levantar objetos?",["Polea y cuerda","Manivela y biela","Hélice y eje","Resistencia y LED"]],
+["¿Qué se decidió mediante pruebas de desempeño en la grúa?",["El largo óptimo del brazo mecánico","El color de la cabina","El número de baterías","La cantidad de lámparas"]],
+["En el helicóptero, ¿cuántos motores impulsan las hélices principal y de cola?",["Uno solo","Dos","Cuatro","Ninguno"]],
+["¿Cómo llega el movimiento del motor hasta la hélice de cola?",["Por una cadena de engranajes interconectados","Por un cable eléctrico","Por una polea gigante","Por una palanca"]],
+["En el camión de volteo, ¿qué se gira con la manivela para elevar la caja?",["El eje amarillo","La hélice","El LED","El switch"]],
+["¿Cuántas ruedas de gran diámetro tiene la camioneta todoterreno?",["Cuatro","Dos","Tres","Seis"]],
+["¿Cuántas ruedas tiene el tren de aterrizaje del avión de hélice?",["Tres","Una","Dos","Cinco"]],
+["En el avión, ¿qué conecta la fuerza del motor con la hélice frontal?",["Un eje central","Una polea","Un diodo","Una resistencia"]],
+["¿Cuántos rotores independientes tiene el cuadricóptero (drone)?",["Cuatro","Dos","Tres","Ocho"]],
+["¿Para qué sirve la plataforma central del drone?",["Ser base de la energía y el cableado, y equilibrar el centro de masa","Lanzar objetos","Cargar materiales pesados","Iluminar la pista"]],
+["¿Qué fuente de poder usan los circuitos del proyecto?",["Baterías alcalinas","Paneles solares","Enchufe de pared","Generador de gasolina"]],
+["En la corriente continua (CC), ¿cómo fluye la corriente?",["Siempre en un solo sentido","Cambia de sentido constantemente","En círculos sin fin","No fluye"]],
+["¿Qué tipo de LED llevan el helicóptero y el drone?",["LED intermitentes","LED normales fijos","Bombillas de filamento","Lámparas de gas"]],
+["¿Con qué se construyeron los postes de las 8 lámparas del alumbrado simulado?",["Pajillas plásticas","Palitos de helado","Tubos de PVC","Cañas de bambú"]],
+["¿Qué ventaja tiene el circuito en paralelo del alumbrado?",["Si un LED falla, las demás lámparas siguen encendidas","Gasta más energía","Solo enciende una lámpara a la vez","No necesita batería"]],
+["¿Para qué se coloca una resistencia en serie con el LED?",["Limitar la corriente y proteger el LED","Aumentar el voltaje","Hacer parpadear el LED","Sustituir al interruptor"]],
+["En el semáforo, ¿qué ocurre al presionar los switchs?",["Se cierra el circuito y la corriente llega a los LED","Se apagan las baterías","Se rompe el circuito","Cambia la corriente a alterna"]]
+];
+const LET=["A","B","C","D"];
+const app=document.getElementById("app"),cv=document.getElementById("cv"),cx=cv.getContext("2d");
+let order,i,score,streak,best,locked,sound=true,ac;
+
+/* ---------- Sonido (WebAudio) ---------- */
+function tone(f,t,d,type="sine",v=.15,when=0){if(!sound)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),s=ac.currentTime+when;o.type=type;o.frequency.setValueAtTime(f,s);g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+d);o.connect(g);g.connect(ac.destination);o.start(s);o.stop(s+d)}catch(e){}}
+const sfx={
+ ok(){[523,659,784,1047].forEach((f,k)=>tone(f,0,.18,"triangle",.2,k*.09))},
+ bad(){tone(220,0,.25,"sawtooth",.15);tone(150,0,.4,"sawtooth",.15,.18)},
+ click(){tone(600,0,.06,"square",.06)},
+ start(){[392,523,659].forEach((f,k)=>tone(f,0,.15,"square",.08,k*.1))},
+ win(){[523,659,784,659,784,1047].forEach((f,k)=>tone(f,0,.22,"triangle",.2,k*.12))},
+ end(){[392,330,262].forEach((f,k)=>tone(f,0,.3,"triangle",.18,k*.18))}
+};
+document.getElementById("snd").onclick=e=>{sound=!sound;e.target.textContent=sound?"🔊":"🔇";sfx.click()};
+
+/* ---------- Confeti ---------- */
+let parts=[],raf;
+function size(){cv.width=innerWidth;cv.height=innerHeight}size();addEventListener("resize",size);
+function confetti(n=90,x=innerWidth/2,y=innerHeight/2){
+ const c=["#ffb703","#2a6df4","#1fa85a","#e03a3a","#ff7bbf"];
+ for(let k=0;k<n;k++)parts.push({x,y,vx:(Math.random()-.5)*14,vy:Math.random()*-13-3,r:Math.random()*7+4,c:c[k%5],a:Math.random()*6,l:100});
+ if(!raf)loop()}
+function loop(){cx.clearRect(0,0,cv.width,cv.height);
+ parts=parts.filter(p=>p.l>0);
+ parts.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.a+=.2;p.l--;cx.save();cx.translate(p.x,p.y);cx.rotate(p.a);cx.fillStyle=p.c;cx.globalAlpha=Math.min(1,p.l/30);cx.fillRect(-p.r/2,-p.r/2,p.r,p.r*1.6);cx.restore()});
+ raf=parts.length?requestAnimationFrame(loop):null}
+
+/* ---------- Pantallas ---------- */
+function shuffle(a){a=a.slice();for(let k=a.length-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function home(){
+ app.innerHTML=`<div class="card"><div class="gears"><span>⚙️</span><span>⚙️</span><span>🤖</span></div>
+ <h1>Trivia de Robótica</h1>
+ <p>Feria Eucamer 2026 · 25 preguntas sobre nuestros prototipos: vehículos, mecánica, electrónica y circuitos. ¡Demuestra cuánto aprendiste!</p>
+ <button class="btn" id="go">¡Empezar!</button></div>`;
+ document.getElementById("go").onclick=()=>{sfx.start();start()}}
+function start(){order=shuffle(Q.map((_,k)=>k));i=0;score=0;streak=0;best=0;show()}
+function show(){
+ locked=false;
+ const [q,o]=Q[order[i]];
+ const opts=shuffle(o.map((t,k)=>({t,ok:k===0})));
+ app.innerHTML=`<div class="card" id="c">
+  <div class="top"><span class="pill">Pregunta ${i+1}/25</span><span class="pill" id="sc">⭐ ${score}</span><span class="pill" id="st">🔥 ${streak}</span></div>
+  <div class="bar"><i id="pb"></i></div>
+  <h2 class="q">${q}</h2>
+  <div class="opts">${opts.map((p,k)=>`<button class="opt" data-ok="${p.ok}"><b>${LET[k]}</b>${p.t}</button>`).join("")}</div>
+  <div class="fb" id="fb"></div><div class="next" id="nx"></div></div>`;
+ requestAnimationFrame(()=>document.getElementById("pb").style.width=(i/25*100)+"%");
+ app.querySelectorAll(".opt").forEach(b=>b.onclick=()=>answer(b))}
+function answer(b){
+ if(locked)return;locked=true;sfx.click();
+ const ok=b.dataset.ok==="true",all=[...app.querySelectorAll(".opt")],card=document.getElementById("c"),fb=document.getElementById("fb");
+ all.forEach(x=>{x.disabled=true;if(x.dataset.ok==="true")x.classList.add("ok");else if(x!==b)x.classList.add("dim")});
+ const r=b.getBoundingClientRect();
+ if(ok){score++;streak++;best=Math.max(best,streak);b.classList.add("ok");sfx.ok();confetti(70,r.left+r.width/2,r.top);
+  card.style.setProperty("--fc","#1fa85a");card.classList.add("flash");
+  fb.className="fb show ok";fb.innerHTML="✅ ¡Correcto!"+(streak>=3?` <span>Racha de ${streak} 🔥</span>`:"")}
+ else{streak=0;b.classList.add("bad");sfx.bad();
+  card.style.setProperty("--fc","#e03a3a");card.classList.add("flash");
+  const right=all.find(x=>x.dataset.ok==="true").textContent.slice(1);
+  fb.className="fb show bad";fb.innerHTML=`❌ Incorrecto. <span>Respuesta: ${right}</span>`}
+ const sc=document.getElementById("sc"),st=document.getElementById("st");sc.textContent="⭐ "+score;st.textContent="🔥 "+streak;
+ if(ok)sc.classList.add("bump");
+ const nx=document.getElementById("nx");nx.innerHTML=`<button class="btn" id="n">${i<24?"Siguiente":"Ver resultado"}</button>`;
+ const n=document.getElementById("n");n.focus({preventScroll:true});n.onclick=()=>{sfx.click();i++;i<25?show():end()}}
+function end(){
+ const p=score/25,[t,e]=p>=.9?["¡Ingeniero/a experto/a!","🏆"]:p>=.7?["¡Gran constructor/a!","🤖"]:p>=.5?["¡Buen aprendiz!","🔧"]:["¡Sigue practicando!","⚙️"];
+ p>=.5?(sfx.win(),confetti(200),setTimeout(()=>confetti(120,innerWidth*.25,innerHeight*.5),350),setTimeout(()=>confetti(120,innerWidth*.75,innerHeight*.5),600)):sfx.end();
+ app.innerHTML=`<div class="card" style="text-align:center"><div style="font-size:60px">${e}</div><h1>${t}</h1>
+ <div class="big">${score}<span style="font-size:36px;color:var(--mut)">/25</span></div>
+ <div class="stats"><span class="pill">✅ ${score} correctas</span><span class="pill">❌ ${25-score} incorrectas</span><span class="pill">🔥 Mejor racha: ${best}</span></div>
+ <button class="btn" id="re">Jugar otra vez</button></div>`;
+ document.getElementById("re").onclick=()=>{sfx.start();start()}}
+home();
+</script>
+</body>
+</html>
